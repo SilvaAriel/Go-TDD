@@ -1,15 +1,20 @@
 package listing
 
 type Repository interface {
-	ListAllProjects() []Project
+	ListAll() []Project
+	GetById(id int) Project
 }
 
 type Service struct {
 	r Repository
 }
 
-func (s *Service) ListAllProjects() []Project {
-	return s.r.ListAllProjects()
+func (s *Service) ListAll() []Project {
+	return s.r.ListAll()
+}
+
+func (s *Service) GetById(id int) Project {
+	return s.r.GetById(id)
 }
 
 func NewService(r Repository) *Service {
