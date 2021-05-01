@@ -12,17 +12,14 @@ func TestListing_ListAll(t *testing.T) {
 
 	t.Run("List all projects", func(t *testing.T) {
 		mockrepo := new(mockRepo)
-		mockrepo.Projects = []Project{{1, "Destroy E-Corp", now()}, {2, "Help Ray", now()}}
+		reports := []Report{}
+		mockrepo.ExpectedProject = []Project{{1, "Destroy E-Corp", now(), reports}, {2, "Help Ray", now(), reports}}
 
 		s := NewService(mockrepo)
 
 		got := s.ListAll()
-		want := []Project{
-			{1, "Destroy E-Corp", now()},
-			{2, "Help Ray", now()},
-		}
-		if !reflect.DeepEqual(got, want) {
-			t.Errorf("Got %v, but wanted %v", got, want)
+		if !reflect.DeepEqual(got, mockrepo.ExpectedProject) {
+			t.Errorf("Got %v, but wanted %v", got, mockrepo.ExpectedProject)
 		}
 	})
 }
@@ -30,36 +27,34 @@ func TestListing_ListAll(t *testing.T) {
 func TestListing_GetById(t *testing.T) {
 	now := time.Now
 
-	tt := []struct {
-		id            int
-		mockProject   []Project
-		want          Project
-		expectedError error
+	reports := []Report{}
+	tt := map[string]struct {
+		id       int
+		mockrepo *mockRepo
 	}{
-		{
-			id:          1,
-			mockProject: []Project{{1, "Destroy E-Corp", now()}},
-			want:        Project{1, "Destroy E-Corp", now()},
-		},
-		{
-			id:            2,
-			mockProject:   []Project{{1, "Destroy E-Corp", now()}},
-			want:          Project{},
-			expectedError: errors.New("Id not found"),
+		"Valid ID": {
+			id: 1,
+			mockrepo: &mockRepo{
+				ExpectedProject: []Project{{1, "Destroy E-Corp", now(), reports}},
+				ExpectedError:   nil}},
+		"Invalid ID": {
+			id: 2,
+			mockrepo: &mockRepo{
+				ExpectedProject: nil,
+				ExpectedError:   errors.New("Project not found")},
 		},
 	}
 
-	for _, tc := range tt {
-		t.Run("Get project by id", func(t *testing.T) {
-			mockrepo := new(mockRepo)
-			project := Project{1, "Destroy E-Corp", now()}
-			mockrepo.Projects = tc.mockProject
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			s := NewService(tc.mockrepo)
 
-			s := NewService(mockrepo)
-
-			got, err := s.GetById(project.ID)
-			if err != tc.expectedError {
-				t.Errorf("Got %v, but wanted %v", got, tc.want)
+			got, err := s.GetById(tc.id)
+			if err != tc.mockrepo.ExpectedError {
+				t.Fatalf("Got error %v, but wanted %v", err, tc.mockrepo.ExpectedError)
+			}
+			if !reflect.DeepEqual(got, tc.mockrepo.ExpectedProject) {
+				t.Fatalf("Got %v, but expected %v", got, tc.mockrepo.ExpectedProject)
 			}
 		})
 	}
@@ -68,12 +63,13 @@ func TestListing_GetById(t *testing.T) {
 
 type mockRepo struct {
 	ExpectedProject []Project
+	ExpectedError   error
 }
 
 func (m *mockRepo) ListAll() []Project {
 	return m.ExpectedProject
 }
 
-func (m *mockRepo) GetById(id int) (Project, error) {
-	return m.expectedProject, m.expectedError
+func (m *mockRepo) GetById(id int) ([]Project, error) {
+	return m.ExpectedProject, m.ExpectedError
 }
