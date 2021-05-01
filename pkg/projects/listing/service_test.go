@@ -9,19 +9,27 @@ import (
 
 func TestListing_ListAll(t *testing.T) {
 	now := time.Now
+	reports := []Report{}
 
-	t.Run("List all projects", func(t *testing.T) {
-		mockrepo := new(mockRepo)
-		reports := []Report{}
-		mockrepo.ExpectedProject = []Project{{1, "Destroy E-Corp", now(), reports}, {2, "Help Ray", now(), reports}}
+	tt := map[string]struct {
+		mockrepo *mockRepo
+	}{
+		"All projects": {&mockRepo{
+			ExpectedProject: []Project{{1, "Destroy E-Corp", now(), reports}, {2, "Help Ray", now(), reports}}, ExpectedError: nil}},
+		"No projects": {&mockRepo{
+			ExpectedProject: []Project{}, ExpectedError: nil}},
+	}
 
-		s := NewService(mockrepo)
+	for name, tc := range tt {
+		t.Run(name, func(t *testing.T) {
+			s := NewService(tc.mockrepo)
 
-		got := s.ListAll()
-		if !reflect.DeepEqual(got, mockrepo.ExpectedProject) {
-			t.Errorf("Got %v, but wanted %v", got, mockrepo.ExpectedProject)
-		}
-	})
+			got := s.ListAll()
+			if !reflect.DeepEqual(got, tc.mockrepo.ExpectedProject) {
+				t.Errorf("Got %v, but wanted %v", got, tc.mockrepo.ExpectedProject)
+			}
+		})
+	}
 }
 
 func TestListing_GetById(t *testing.T) {
