@@ -12,8 +12,8 @@ func TestAdding(t *testing.T) {
 	tt := map[string]struct {
 		mockrepo *mockRepo
 	}{
-		"Valid post": {&mockRepo{Input: &Project{Name: "Learn Regex"}, Output: &Project{ID: 1, Name: "Learn Regex", CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
-		"Empty post": {&mockRepo{Input: &Project{}, ExpectedError: &FieldError{Field: "name"}}},
+		"Valid adding":     {&mockRepo{Input: &Project{Name: "Learn Regex"}, Output: &Project{ID: 1, Name: "Learn Regex", CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
+		"Empty name field": {&mockRepo{Input: &Project{}, ExpectedError: &FieldError{Field: "name"}}},
 	}
 
 	for name, tc := range tt {
