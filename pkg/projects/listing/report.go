@@ -2,9 +2,9 @@ package listing
 
 import "time"
 
-type Project struct {
+type Report struct {
 	ID        int
 	Name      string
+	Success   bool
 	CreatedAt time.Time
-	Reports   []Report
 }
