@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 	"time"
+  "errors"
 )
 
 func TestUpdating(t *testing.T) {
@@ -18,27 +19,30 @@ func TestUpdating(t *testing.T) {
 			mockrepo: &mockRepo{output: Project{ID: 1, Name: "Work at E-Corp", CreatedAt: now, Reports: []Report{}}, expectedError: nil}},
 		"With incorrect ID": {
 			id: 5, name: "Work at E-Corp",
-			mockrepo: &mockRepo{output: Project{}, expectedError: &InvalidIdError{id: id}}},
+			mockrepo: &mockRepo{output: Project{}, expectedError: errors.New("")}},
 	}
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
 			s := NewService(tc.mockrepo)
-			got := s.Update(tc.id, tc.name)
+			got, err := s.Update(tc.id, tc.name)
 
 			if !reflect.DeepEqual(got, tc.mockrepo.output) {
 				t.Errorf("Got %v, but expected %v", got, tc.mockrepo.output)
 			}
+      if err != tc.mockrepo.expectedError {
+        t.Errorf("Got error %q, but expected %q", err, tc.mockrepo.expectedError)
+      }
 
 		})
 	}
 }
 
 type mockRepo struct {
-	output        *Project
+	output        Project
 	expectedError error
 }
 
 func (m *mockRepo) Update(id int, name string) (Project, error) {
-	return m.output
+	return m.output, m.expectedError
 }
