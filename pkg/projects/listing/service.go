@@ -5,18 +5,18 @@ type Repository interface {
 	GetById(id int) ([]Project, error)
 }
 
-type Service struct {
+type service struct {
 	r Repository
 }
 
-func (s *Service) ListAll() []Project {
+func (s *service) ListAll() []Project {
 	return s.r.ListAll()
 }
 
-func (s *Service) GetById(id int) ([]Project, error) {
+func (s *service) GetById(id int) ([]Project, error) {
 	return s.r.GetById(id)
 }
 
-func NewService(r Repository) *Service {
-	return &Service{r}
+func NewService(r Repository) *service {
+	return &service{r}
 }
