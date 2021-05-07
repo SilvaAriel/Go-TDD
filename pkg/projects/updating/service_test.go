@@ -20,23 +20,30 @@ func TestUpdating(t *testing.T) {
 		"With incorrect ID": {
 			id: 5, name: "Work at E-Corp",
 			mockrepo: &mockRepo{output: Project{}, expectedError: errors.New("")}},
-	}
+    "With empty name": {
+      id: 7, name: "",
+      mockrepo: &mockRepo{output: Project{}, expectedError: RequiredFieldError{"name"}}},
+  }
+  for name, tc := range tt {
+    t.Run(name, func(t *testing.T) {
+      s := NewService(tc.mockrepo)
+      got, err := s.Update(tc.id, tc.name)
 
-	for name, tc := range tt {
-		t.Run(name, func(t *testing.T) {
-			s := NewService(tc.mockrepo)
-			got, err := s.Update(tc.id, tc.name)
-
-			if !reflect.DeepEqual(got, tc.mockrepo.output) {
-				t.Errorf("Got %v, but expected %v", got, tc.mockrepo.output)
-			}
+      if !reflect.DeepEqual(got, tc.mockrepo.output) {
+        t.Errorf("Got %v, but expected %v", got, tc.mockrepo.output)
+      }
       if err != nil && tc.mockrepo.expectedError == nil {
         t.Errorf("Got error %q, but expected none", err)
       }
+      if err != nil && tc.mockrepo.expectedError == CustomError && err != CustomError {
+        t.Errorf("Got %v, but expected %v", got, tc.mockrepo.output)
+      }
 
-		})
-	}
+    })
+  }
 }
+
+
 
 type mockRepo struct {
 	output        Project
