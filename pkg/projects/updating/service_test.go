@@ -30,8 +30,8 @@ func TestUpdating(t *testing.T) {
 			if !reflect.DeepEqual(got, tc.mockrepo.output) {
 				t.Errorf("Got %v, but expected %v", got, tc.mockrepo.output)
 			}
-      if err != tc.mockrepo.expectedError {
-        t.Errorf("Got error %q, but expected %q", err, tc.mockrepo.expectedError)
+      if err != nil && tc.mockrepo.expectedError == nil {
+        t.Errorf("Got error %q, but expected none", err)
       }
 
 		})
