@@ -15,18 +15,22 @@ func TestListing_ListAll(t *testing.T) {
 		mockrepo *mockRepo
 	}{
 		"All projects": {&mockRepo{
-			ExpectedProject: []Project{{1, "Destroy E-Corp", now(), reports}, {2, "Help Ray", now(), reports}}, ExpectedError: nil}},
-		"No projects": {&mockRepo{
+			ExpectedProject: []Project{{1, "Destroy E-Corp", Status{}, now(), reports}, {2, "Help Ray", Status{}, now(), reports}}, ExpectedError: nil}},
+		"No project": {&mockRepo{
 			ExpectedProject: []Project{}, ExpectedError: nil}},
+		"Total equals Success plus Failure": {&mockRepo{
+			ExpectedProject: []Project{{1, "Destroy E-Corp", Status{Success: 10, Failure: 5, Total: 15}, now(), reports}}, ExpectedError: nil}},
 	}
 
 	for name, tc := range tt {
 		t.Run(name, func(t *testing.T) {
 			s := NewService(tc.mockrepo)
-
 			got := s.ListAll()
 			if !reflect.DeepEqual(got, tc.mockrepo.ExpectedProject) {
 				t.Errorf("Got %v, but wanted %v", got, tc.mockrepo.ExpectedProject)
+			}
+			if !reflect.DeepEqual(got, []Project{}) && got[0].Status.Success+got[0].Status.Failure != got[0].Status.Total {
+				t.Errorf("Expected Status Total (%d) to be the sum of Success (%d) and Failure (%d)", got[0].Status.Total, got[0].Status.Success, got[0].Status.Failure)
 			}
 		})
 	}
@@ -43,7 +47,7 @@ func TestListing_GetById(t *testing.T) {
 		"Valid ID": {
 			id: 1,
 			mockrepo: &mockRepo{
-				ExpectedProject: []Project{{1, "Destroy E-Corp", now(), reports}},
+				ExpectedProject: []Project{{1, "Destroy E-Corp", Status{}, now(), reports}},
 				ExpectedError:   nil}},
 		"Invalid ID": {
 			id: 2,

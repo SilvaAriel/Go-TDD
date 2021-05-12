@@ -12,7 +12,7 @@ func TestDeleting(t *testing.T) {
 	tt := map[string]struct {
 		mockrepo *mockRepo
 	}{
-		"Valid ID":   {&mockRepo{Input: 1, Output: &Project{ID: 1, Name: "Deleted", CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
+		"Valid ID":   {&mockRepo{Input: 1, Output: &Project{ID: 1, Name: "Deleted", Status: Status{}, CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
 		"Invalid ID": {&mockRepo{Input: 5, Output: &Project{}, ExpectedError: errors.New("Error")}},
 	}
 

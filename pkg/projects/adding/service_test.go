@@ -12,7 +12,7 @@ func TestAdding(t *testing.T) {
 	tt := map[string]struct {
 		mockrepo *mockRepo
 	}{
-		"Valid adding":     {&mockRepo{Input: &Project{Name: "Learn Regex"}, Output: &Project{ID: 1, Name: "Learn Regex", CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
+		"Valid adding":     {&mockRepo{Input: &Project{Name: "Learn Regex"}, Output: &Project{ID: 1, Name: "Learn Regex", Status: Status{Success: 0, Failure: 0, Total: 0}, CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
 		"Empty name field": {&mockRepo{Input: &Project{}, ExpectedError: errors.New("Shit happens")}},
 	}
 
@@ -25,6 +25,9 @@ func TestAdding(t *testing.T) {
 			}
 			if err != nil && tc.mockrepo.ExpectedError == nil {
 				t.Fatalf("Got error %q, but expected none", err)
+			}
+			if got != nil && got.Status.Success+got.Status.Failure != got.Status.Total {
+				t.Errorf("Expected Status Total (%d) to be the sum of Success (%d) and Failure (%d)", got.Status.Total, got.Status.Success, got.Status.Failure)
 			}
 		})
 	}
