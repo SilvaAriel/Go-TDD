@@ -13,7 +13,7 @@ func TestAdding(t *testing.T) {
 		mockrepo *mockRepo
 	}{
 		"Valid adding":     {&mockRepo{Input: &Project{Name: "Learn Regex"}, Output: &Project{ID: 1, Name: "Learn Regex", CreatedAt: now, Reports: []Report{}}, ExpectedError: nil}},
-		"Empty name field": {&mockRepo{Input: &Project{}, ExpectedError: &FieldError{Field: "name"}}},
+		"Empty name field": {&mockRepo{Input: &Project{}, ExpectedError: errors.New("Shit happens")}},
 	}
 
 	for name, tc := range tt {
@@ -23,12 +23,9 @@ func TestAdding(t *testing.T) {
 			if !reflect.DeepEqual(got, tc.mockrepo.Output) {
 				t.Fatalf("Got %v, but wanted %v", got, tc.mockrepo.Output)
 			}
-			if err != nil {
-				if !errors.Is(err, tc.mockrepo.ExpectedError) {
-					t.Fatalf("Got error %q, but wanted error %q", err, tc.mockrepo.ExpectedError)
-				}
+			if err != nil && tc.mockrepo.ExpectedError == nil {
+				t.Fatalf("Got error %q, but expected none", err)
 			}
-
 		})
 	}
 }
