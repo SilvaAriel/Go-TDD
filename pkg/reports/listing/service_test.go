@@ -12,11 +12,11 @@ func TestListing(t *testing.T) {
 	tt := map[string]struct {
 		mockrepo *mockRepo
 	}{
-		"List by ID":              {&mockRepo{1, 6, &Report{1, 6, "Teste", now, true}, nil}},
-		"Return wrong Project ID": {&mockRepo{1, 6, &Report{1, 6, "Teste", now, true}, nil}},
-		"Return wrong Report ID":  {&mockRepo{2, 7, &Report{2, 7, "Teste", now, true}, nil}},
-		"Invalid Project ID":      {&mockRepo{5, 1, nil, errors.New("")}},
-		"Invalid Report ID":       {&mockRepo{1, 5, nil, errors.New("")}},
+		"List by ID":                {&mockRepo{1, 6, &Report{1, 6, "Teste", now, true}, nil}},
+		"Expect correct Project ID": {&mockRepo{1, 6, &Report{1, 6, "Teste", now, true}, nil}},
+		"Expect correct Report ID":  {&mockRepo{2, 7, &Report{2, 7, "Teste", now, true}, nil}},
+		"Invalid Project ID":        {&mockRepo{5, 1, nil, errors.New("")}},
+		"Invalid Report ID":         {&mockRepo{1, 5, nil, errors.New("")}},
 	}
 
 	for name, tc := range tt {
