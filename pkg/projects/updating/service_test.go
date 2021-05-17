@@ -16,7 +16,7 @@ func TestUpdating(t *testing.T) {
 	}{
 		"With correct ID": {
 			id: 1, name: "Work at E-Corp",
-			mockrepo: &mockRepo{output: Project{ID: 1, Name: "Work at E-Corp", CreatedAt: now}, expectedError: nil}},
+			mockrepo: &mockRepo{output: Project{ID: 1, Name: "Work at E-Corp", Status: Status{Success: 10, Failure: 5, Total: 15}, CreatedAt: now}, expectedError: nil}},
 		"With incorrect ID": {
 			id: 5, name: "Work at E-Corp",
 			mockrepo: &mockRepo{output: Project{}, expectedError: errors.New("")}},
